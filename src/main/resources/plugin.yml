@@ -1,0 +1,19 @@
+name: InviteReward
+version: 1.0
+main: com.norbye.dev.invitereward.Main
+description: Plugin to give rewards to users with a reward-code
+api-version: 1.15
+author: eybro <jonna9817@gmail.com>
+website: dev.norbye.com
+
+commands:
+  invitereward:
+    description: Claim your invite reward
+    usage: /invitereward <invite-code>
+    permission: invitereward.receive
+    permission-message: You do not have permission to use this command.
+
+permissions:
+  invitereward.receive:
+      default: true
+      description: Allows you to use the command /invitereward
