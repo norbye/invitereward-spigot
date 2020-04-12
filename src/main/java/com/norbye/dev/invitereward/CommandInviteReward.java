@@ -18,6 +18,39 @@ public class CommandInviteReward implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender commandSender, Command cmd, String label, String[] args) {
+        if (args.length > 0 && "reload".equalsIgnoreCase(args[0])) {
+            return onReloadCommand(commandSender);
+        }
+        return onRewardCommand(commandSender, args);
+    }
+
+    private boolean onReloadCommand(CommandSender commandSender) {
+        // Reload config values
+        plugin.reloadConfig();
+        plugin.config = plugin.getConfig();
+        // Restart DB connection
+        try {
+            if (plugin.connection != null) {
+                plugin.connection.close();
+            }
+        } catch (SQLException e) {
+            plugin.error("Failed to stop mysql connection on reload");
+            e.printStackTrace();
+        }
+        plugin.initialiseDBConnection();
+        // Notify console
+        PluginDescriptionFile pdf = plugin.getDescription();
+        if (commandSender instanceof Player) {
+            plugin.log("[" + pdf.getName() + "] v" + pdf.getVersion());
+            plugin.log(pdf.getName() + " reloaded");
+        }
+        // Notify sender
+        commandSender.sendMessage(ChatColor.GOLD + "[" + pdf.getName() + "] v" + pdf.getVersion());
+        commandSender.sendMessage(ChatColor.GOLD + pdf.getName() + " reloaded");
+        return false;
+    }
+
+    private boolean onRewardCommand(CommandSender commandSender, String[] args) {
         if (!(commandSender instanceof Player)) {
             // Limit to version info
             PluginDescriptionFile pdf = plugin.getDescription();
@@ -35,6 +68,7 @@ public class CommandInviteReward implements CommandExecutor {
             return true;
         }
 
+        // TODO update the db connection stuffs
         // Check if the reward code is active in the db
         String rewardCode = args[0];
         try {
@@ -49,7 +83,6 @@ public class CommandInviteReward implements CommandExecutor {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return false;
     }
 }
