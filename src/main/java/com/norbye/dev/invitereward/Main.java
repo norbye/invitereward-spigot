@@ -135,6 +135,9 @@ public class Main extends JavaPlugin {
     }
 
     public void debug(String s) {
+        if (!getConfig().getBoolean("debug", false)) {
+            return;
+        }
         ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
         console.sendMessage(ChatColor.DARK_GRAY + "[InviteReward][debug] " + s);
     }
