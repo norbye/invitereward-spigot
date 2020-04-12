@@ -6,10 +6,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class Main extends JavaPlugin {
 
@@ -31,7 +28,7 @@ public class Main extends JavaPlugin {
         this.getCommand("invitereward").setExecutor(new CommandInviteReward(this));
 
         // Launch the mysql connections
-        initialiseDBConnection();
+        initializeDBConnection();
     }
 
     @Override
@@ -45,7 +42,7 @@ public class Main extends JavaPlugin {
         }
     }
 
-    public void initialiseDBConnection() {
+    public void initializeDBConnection() {
         final String username = config.getString("db.user", "");
         final String password = config.getString("db.pass", "");
         final String url = "jdbc:mysql://"
@@ -60,7 +57,6 @@ public class Main extends JavaPlugin {
         }
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            debug("mySQL driver exists");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
             error("jdbc driver unavailable!");
@@ -73,18 +69,63 @@ public class Main extends JavaPlugin {
                     username,
                     password
             );
-            debug("Connection established");
+            debug("mySQL connection established");
 
-            // TODO update the table setup
-            // Default db setup
-            String sql = "CREATE TABLE IF NOT EXISTS invites(invite_id char(7))";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.executeUpdate();
-            debug("Default table created");
+            updateDBStructure();
+
             // For more stuffs: https://www.spigotmc.org/wiki/mysql-database-integration-with-your-plugin/
         } catch (SQLException e) {
             error("Failed to setup SQL connection");
             e.printStackTrace();
+        }
+    }
+
+    private void updateDBStructure() throws SQLException {
+        // `db`.`invitations`
+        String sql = "CREATE TABLE IF NOT EXISTS invitations(" +
+                "`invite_id` char(7) primary key not null, " +
+                "`command_id` int(11) not null," +
+                "`expires` datetime default null," +
+                "`used` datetime default null," +
+                "`used_by` char(36) default null" +
+                ")";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.executeUpdate();
+        // `db`.`commands`
+        sql = "CREATE TABLE IF NOT EXISTS `commands`(" +
+                "`command_id` int(11) auto_increment primary key," +
+                "`command` text not null," +
+                "`active` tinyint(1) default 1" +
+                ")";
+        stmt = connection.prepareStatement(sql);
+        stmt.executeUpdate();
+        // `db`.`invitereward`
+        sql = "CREATE TABLE IF NOT EXISTS `invitereward`(" +
+                "`key` varchar(45) primary key not null," +
+                "`value` text not null" +
+                ")";
+        stmt = connection.prepareStatement(sql);
+        stmt.executeUpdate();
+
+        sql = "SELECT `key`, `value` FROM invitereward WHERE `key` = 'dbversion'";
+        stmt = connection.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+        int dbVersion = 0;
+        if (rs.next()) {
+            dbVersion = rs.getInt("value");
+        }
+        debug("dbVersion " + dbVersion);
+        if (dbVersion == 0) {
+            // Insert dbVersion
+            sql = "INSERT INTO invitereward (`key`, `value`) VALUES (?,?)";
+            stmt = connection.prepareStatement(sql);
+            stmt.setString(1, "dbversion");
+            stmt.setInt(2, 1);
+            if (stmt.executeUpdate() != 0) {
+                debug("Updated dbVersion to 1");
+            } else {
+                debug("Failed to update dbVersion to 1");
+            }
         }
     }
 
