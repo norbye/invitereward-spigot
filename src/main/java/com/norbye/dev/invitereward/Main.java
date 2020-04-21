@@ -71,11 +71,20 @@ public class Main extends JavaPlugin {
             );
             debug("mySQL connection established");
 
-            updateDBStructure();
-
             // For more stuffs: https://www.spigotmc.org/wiki/mysql-database-integration-with-your-plugin/
         } catch (SQLException e) {
+            connection = null;
             error("Failed to setup SQL connection");
+            if (getConfig().getBoolean("debug", false)) {
+                // Only display failed to connect stacktrace if debug mode is enabled
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        try {
+            updateDBStructure();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

@@ -69,6 +69,12 @@ public class CommandInviteReward implements CommandExecutor {
             return true;
         }
 
+        // Verify that the db is connected
+        if (plugin.connection == null) {
+            p.sendMessage("Failed to connect to database. Contact an administrator.");
+            return true;
+        }
+
         // Check if the reward code is active in the db
         String rewardCode = args[0];
         String rewardCommand = "";
