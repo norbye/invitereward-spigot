@@ -76,7 +76,7 @@ public class CommandInviteReward implements CommandExecutor {
 
         // Check if the reward code is active in the db
         String rewardCode = args[0];
-        String rewardCommand = "";
+        String rewardCommand;
         try {
             String sql = "SELECT i.`used`, c.`command` FROM invitations AS i " +
                     "LEFT JOIN `commands` AS c ON i.`command_id` = c.`command_id` " +
@@ -109,7 +109,7 @@ public class CommandInviteReward implements CommandExecutor {
             return true;
         }
         // Replace variables
-        rewardCommand = rewardCommand.replaceAll("\\{playername\\}", player.getName());
+        rewardCommand = rewardCommand.replaceAll("\\{playername}", player.getName());
         sendMessage(player,"Command: /" + rewardCommand);
         // Update db that the command was executed
         try {

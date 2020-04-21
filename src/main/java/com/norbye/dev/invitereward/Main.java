@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,7 +14,7 @@ public class Main extends JavaPlugin {
 
     FileConfiguration config = getConfig();
 
-    static Connection connection;
+    Connection connection;
 
     @Override
     public void onEnable() {
@@ -26,7 +27,13 @@ public class Main extends JavaPlugin {
         config.options().copyDefaults(true);
         this.saveDefaultConfig();
 
-        this.getCommand("invitereward").setExecutor(new CommandInviteReward(this));
+        PluginCommand inviterewardCommand = this.getCommand("invitereward");
+        if (inviterewardCommand == null) {
+            // Invalid plugin
+            error("Failed to enable invitereward command");
+        } else {
+            inviterewardCommand.setExecutor(new CommandInviteReward(this));
+        }
 
         // Launch the mysql connections
         initializeDBConnection();
