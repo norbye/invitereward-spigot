@@ -1,7 +1,6 @@
 package com.norbye.dev.invitereward;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -46,8 +45,8 @@ public class CommandInviteReward implements CommandExecutor {
             plugin.log(pdf.getName() + " reloaded");
         }
         // Notify sender
-        commandSender.sendMessage(ChatColor.GOLD + "[" + pdf.getName() + "] v" + pdf.getVersion());
-        commandSender.sendMessage(ChatColor.GOLD + pdf.getName() + " reloaded");
+        sendMessage(commandSender,"&6[" + pdf.getName() + "] v" + pdf.getVersion());
+        sendMessage(commandSender,"&6" + pdf.getName() + " reloaded");
         return true;
     }
 
@@ -55,23 +54,23 @@ public class CommandInviteReward implements CommandExecutor {
         if (!(commandSender instanceof Player)) {
             // Limit to version info
             PluginDescriptionFile pdf = plugin.getDescription();
-            commandSender.sendMessage(ChatColor.GOLD + "[" + pdf.getName() + "] v" + pdf.getVersion());
-            commandSender.sendMessage(ChatColor.DARK_RED + "Command can only be ran as a player");
+            sendMessage(commandSender,"&6[" + pdf.getName() + "] v" + pdf.getVersion());
+            sendMessage(commandSender,"&4Command can only be ran as a player");
             return true;
         }
-        Player p = (Player) commandSender;
+        Player player = (Player) commandSender;
 
         if (args.length != 1) {
             // Error, should only pass one variable
             PluginDescriptionFile pdf = plugin.getDescription();
-            p.sendMessage(ChatColor.GOLD + "[" + pdf.getName() + "] v" + pdf.getVersion());
-            p.sendMessage(ChatColor.DARK_RED + "Usage: /invitereward <reward-code>");
+            sendMessage(player,"&6[" + pdf.getName() + "] v" + pdf.getVersion());
+            sendMessage(player,"&4Usage: /invitereward <reward-code>");
             return true;
         }
 
         // Verify that the db is connected
         if (plugin.connection == null) {
-            p.sendMessage("Failed to connect to database. Contact an administrator.");
+            sendMessage(player,"Failed to connect to database. Contact an administrator.");
             return true;
         }
 
@@ -87,37 +86,37 @@ public class CommandInviteReward implements CommandExecutor {
             ResultSet results = stmt.executeQuery();
             if (!results.next()) {
                 plugin.debug("Invalid reward code");
-                commandSender.sendMessage("Invalid reward code");
+                sendMessage(player,"Invalid reward code");
                 return true;
             } else {
                 if (results.getTimestamp("used") != null) {
-                    commandSender.sendMessage("The reward code inserted has already been used");
+                    sendMessage(player,"The reward code inserted has already been used");
                     return true;
                 }
                 rewardCommand = results.getString("command");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            commandSender.sendMessage("Failed to verify reward code");
+            sendMessage(player,"Failed to verify reward code");
             return true;
         }
         if ("".equals(rewardCommand)) {
-            commandSender.sendMessage("Failed to execute reward");
+            sendMessage(player,"Failed to execute reward");
             return true;
         }
         if (rewardCommand == null) {
-            commandSender.sendMessage("Invalid reward");
+            sendMessage(player,"Invalid reward");
             return true;
         }
         // Replace variables
-        rewardCommand = rewardCommand.replaceAll("\\{playername\\}", commandSender.getName());
-        commandSender.sendMessage("Command: /" + rewardCommand);
+        rewardCommand = rewardCommand.replaceAll("\\{playername\\}", player.getName());
+        sendMessage(player,"Command: /" + rewardCommand);
         // Update db that the command was executed
         try {
             String sql = "UPDATE `invitations` SET `used`=?, `used_by`=? WHERE `invite_id`=?";
             PreparedStatement stmt = plugin.connection.prepareStatement(sql);
             stmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
-            stmt.setString(2, String.valueOf(((Player) commandSender).getUniqueId()));
+            stmt.setString(2, String.valueOf(player.getUniqueId()));
             stmt.setString(3, rewardCode);
             int updatedIndex = stmt.executeUpdate();
             if (updatedIndex > 0) {
@@ -137,5 +136,9 @@ public class CommandInviteReward implements CommandExecutor {
             return true;
         }
         return true;
+    }
+
+    private void sendMessage(CommandSender commandSender, String msg) {
+        plugin.sendMessage(commandSender, msg);
     }
 }

@@ -2,6 +2,7 @@ package com.norbye.dev.invitereward;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -140,7 +141,7 @@ public class Main extends JavaPlugin {
 
     public void log(String s) {
         ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-        console.sendMessage(ChatColor.DARK_GRAY + "[InviteReward] " + s);
+        sendMessage(console,"&7[InviteReward] " + s);
     }
 
     public void debug(String s) {
@@ -148,11 +149,33 @@ public class Main extends JavaPlugin {
             return;
         }
         ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-        console.sendMessage(ChatColor.DARK_GRAY + "[InviteReward][debug] " + s);
+        sendMessage(console,"&7[InviteReward][debug] " + s);
     }
 
     public void error(String s) {
         ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-        console.sendMessage(ChatColor.DARK_RED + "[InviteReward][error] " + s);
+        sendMessage(console,"&4[InviteReward][error] " + s);
+    }
+
+    public void sendMessage(CommandSender commandSender, String msg) {
+        commandSender.sendMessage(
+                msg
+                        .replaceAll("&4", ChatColor.DARK_RED + "")
+                        .replaceAll("&c", ChatColor.RED + "")
+                        .replaceAll("&6", ChatColor.GOLD + "")
+                        .replaceAll("&e", ChatColor.YELLOW + "")
+                        .replaceAll("&2", ChatColor.DARK_GREEN + "")
+                        .replaceAll("&a", ChatColor.GREEN + "")
+                        .replaceAll("&b", ChatColor.AQUA + "")
+                        .replaceAll("&3", ChatColor.DARK_AQUA + "")
+                        .replaceAll("&1", ChatColor.DARK_BLUE + "")
+                        .replaceAll("&9", ChatColor.BLUE + "")
+                        .replaceAll("&d", ChatColor.LIGHT_PURPLE + "")
+                        .replaceAll("&5", ChatColor.DARK_PURPLE + "")
+                        .replaceAll("&f", ChatColor.WHITE + "")
+                        .replaceAll("&7", ChatColor.GRAY + "")
+                        .replaceAll("&8", ChatColor.DARK_GRAY + "")
+                        .replaceAll("&0", ChatColor.BLACK + "")
+        );
     }
 }
