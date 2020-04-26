@@ -99,7 +99,7 @@ public class Main extends JavaPlugin {
 
     private void updateDBStructure() throws SQLException {
         // `db`.`invitations`
-        String sql = "CREATE TABLE IF NOT EXISTS invitations(" +
+        String sql = "CREATE TABLE IF NOT EXISTS invitation(" +
                 "`invite_id` char(7) primary key not null, " +
                 "`command_id` int(11) not null," +
                 "`expires` datetime default null," +
