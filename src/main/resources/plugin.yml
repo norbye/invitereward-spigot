@@ -7,13 +7,13 @@ author: eybro <jonna9817@gmail.com>
 website: dev.norbye.com
 
 commands:
-  invitereward:
+  redeem:
     description: Claim your invite reward
-    usage: /invitereward <invite-code>
-    permission: invitereward.receive
+    usage: /redeem <code>
+    permission: invitereward.redeem
     permission-message: You do not have permission to use this command.
 
 permissions:
-  invitereward.receive:
+  invitereward.redeem:
       default: true
-      description: Allows you to use the command /invitereward
+      description: Allows you to use the command /redeem

@@ -104,7 +104,7 @@ public class CommandInviteReward implements CommandExecutor {
             // Error, should only pass one variable
             PluginDescriptionFile pdf = plugin.getDescription();
             sendMessage(player,"&6[" + pdf.getName() + "] v" + pdf.getVersion());
-            sendMessage(player,"&4Usage: /invitereward <reward-code>");
+            sendMessage(player,"&4Usage: /redeem <code>");
             return;
         }
 
