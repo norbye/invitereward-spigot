@@ -25,6 +25,9 @@ public class CommandInviteReward implements CommandExecutor {
     }
 
     private boolean onReloadCommand(CommandSender commandSender) {
+        // Regenerate config if deleted
+        plugin.getConfig().options().copyDefaults(true);
+        plugin.saveDefaultConfig();
         // Reload config values
         plugin.reloadConfig();
         plugin.config = plugin.getConfig();
