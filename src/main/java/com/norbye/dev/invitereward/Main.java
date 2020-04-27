@@ -16,6 +16,11 @@ public class Main extends JavaPlugin {
 
     Connection connection;
 
+    public String PERMISSION_ALL = "invitereward.*";
+    public String PERMISSION_REDEEM = "invitereward.redeem";
+    public String PERMISSION_RELOAD = "invitereward.reload";
+    public String PERMISSION_LIST = "invitereward.list";
+
     @Override
     public void onEnable() {
         // Set the default config

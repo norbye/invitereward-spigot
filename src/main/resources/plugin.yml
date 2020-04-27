@@ -17,3 +17,8 @@ commands:
     usage: /redeem <code>
     permission: invitereward.redeem
     permission-message: You do not have permission to use this command.
+
+permissions:
+  invitereward.redeem:
+    description: Access to /redeem
+    default: true

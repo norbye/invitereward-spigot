@@ -17,24 +17,29 @@ public class CommandRedeem implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender commandSender, Command cmd, String label, String[] args) {
-        if (args.length == 0) {
-            sendMessage(commandSender, "Usage: /redeem <code>");
-            return true;
-        }
-        onRewardCommand(commandSender, args);
-        return true;
-    }
-
-    private void onRewardCommand(CommandSender commandSender, String[] args) {
         if (!(commandSender instanceof Player)) {
-            // Limit to version info
             PluginDescriptionFile pdf = plugin.getDescription();
             sendMessage(commandSender,"&6[" + pdf.getName() + "] v" + pdf.getVersion());
             sendMessage(commandSender,"&4Command can only be ran as a player");
-            return;
+            return true;
         }
+
         Player player = (Player) commandSender;
 
+        if (!player.hasPermission(plugin.PERMISSION_ALL) && !player.hasPermission(plugin.PERMISSION_REDEEM)) {
+            sendMessage(player, "&4You have no permission to perform this command.");
+            return true;
+        }
+
+        if (args.length == 0) {
+            sendMessage(player, "Usage: /redeem <code>");
+            return true;
+        }
+        onRewardCommand(player, args);
+        return true;
+    }
+
+    private void onRewardCommand(Player player, String[] args) {
         if (args.length != 1) {
             // Error, should only pass one variable
             PluginDescriptionFile pdf = plugin.getDescription();

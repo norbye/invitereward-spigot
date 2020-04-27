@@ -12,18 +12,14 @@ public class CommandInviteReward implements CommandExecutor {
 
     private Main plugin;
 
-    private String PERMISSION_ALL = "invitereward.*";
-    private String PERMISSION_RELOAD = "invitereward.reload";
-    private String PERMISSION_LIST = "invitereward.list";
-
     public CommandInviteReward(Main plugin) {
         this.plugin = plugin;
     }
 
     public boolean onCommand(CommandSender commandSender, Command cmd, String label, String[] args) {
-        boolean hasReloadPermission = commandSender.hasPermission(PERMISSION_RELOAD);
-        boolean hasListPermission = commandSender.hasPermission(PERMISSION_LIST);
-        if (!(commandSender instanceof Player) || commandSender.hasPermission(PERMISSION_ALL)) {
+        boolean hasReloadPermission = commandSender.hasPermission(plugin.PERMISSION_RELOAD);
+        boolean hasListPermission = commandSender.hasPermission(plugin.PERMISSION_LIST);
+        if (!(commandSender instanceof Player) || commandSender.hasPermission(plugin.PERMISSION_ALL)) {
             hasReloadPermission = true;
             hasListPermission = true;
         }
@@ -31,10 +27,14 @@ public class CommandInviteReward implements CommandExecutor {
             sendMessage(commandSender, "&4You have no permission to perform this command.");
             return true;
         }
-        if ("reload".equalsIgnoreCase(args[0])) {
-            onReloadCommand(commandSender);
-        } else if ("list".equalsIgnoreCase(args[0])) {
-            onListCommand(commandSender, args);
+        if (args.length > 0) {
+            if ("reload".equalsIgnoreCase(args[0])) {
+                onReloadCommand(commandSender);
+                return true;
+            } else if ("list".equalsIgnoreCase(args[0])) {
+                onListCommand(commandSender, args);
+                return true;
+            }
         }
         PluginDescriptionFile pdf = plugin.getDescription();
         sendMessage(commandSender,"&6[" + pdf.getName() + "] v" + pdf.getVersion());
@@ -48,7 +48,7 @@ public class CommandInviteReward implements CommandExecutor {
     }
 
     private void onReloadCommand(CommandSender commandSender) {
-        if (commandSender instanceof Player && !commandSender.hasPermission(PERMISSION_RELOAD)) {
+        if (commandSender instanceof Player && !commandSender.hasPermission(plugin.PERMISSION_RELOAD)) {
             sendMessage(commandSender, "&4You have do not have permission to execute this command.");
             return;
         }
@@ -80,32 +80,31 @@ public class CommandInviteReward implements CommandExecutor {
     }
 
     private void onListCommand(CommandSender commandSender, String[] args) {
-        if (commandSender instanceof Player && !commandSender.hasPermission(PERMISSION_LIST)) {
+        if (commandSender instanceof Player && !commandSender.hasPermission(plugin.PERMISSION_LIST)) {
             sendMessage(commandSender, "&4You have do not have permission to execute this command.");
             return;
         }
-        if (args.length == 1 || "list".equalsIgnoreCase(args[1])) {
-            // List active commands
-            try {
-                String sql = "SELECT c.command_id, c.command, c.active" +
-                        ", COUNT(IF(i.used IS NOT NULL, 1, NULL)) AS used" +
-                        ", COUNT(IF(i.used IS NULL, 1, NULL)) AS notUSed " +
-                        "FROM `commands` AS c " +
-                        "LEFT JOIN `invitation` AS i ON c.`command_id` = i.`command_id` " +
-                        "GROUP BY `command_id`";
-                PreparedStatement stmt = plugin.connection.prepareStatement(sql);
-                ResultSet results = stmt.executeQuery();
-                while(results.next()) {
-                    sendMessage(commandSender, "/" + results.getString("command"));
-                    sendMessage(commandSender, "   active: " + results.getBoolean("active")
-                            + ", id: " + results.getInt("command_id")
-                            + ", used " + results.getInt("used")
-                            + ", not used " + results.getInt("notUsed"));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                sendMessage(commandSender,"Failed to fetch commands");
+        sendMessage(commandSender, "List of registered rewards:");
+        // List active commands
+        try {
+            String sql = "SELECT c.command_id, c.command, c.active" +
+                    ", COUNT(IF(i.used IS NOT NULL, 1, NULL)) AS used" +
+                    ", COUNT(IF(i.used IS NULL, 1, NULL)) AS notUSed " +
+                    "FROM `commands` AS c " +
+                    "LEFT JOIN `invitation` AS i ON c.`command_id` = i.`command_id` " +
+                    "GROUP BY `command_id`";
+            PreparedStatement stmt = plugin.connection.prepareStatement(sql);
+            ResultSet results = stmt.executeQuery();
+            while(results.next()) {
+                sendMessage(commandSender, "/" + results.getString("command"));
+                sendMessage(commandSender, "   active: " + results.getBoolean("active")
+                        + ", id: " + results.getInt("command_id")
+                        + ", used " + results.getInt("used")
+                        + ", not used " + results.getInt("notUsed"));
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            sendMessage(commandSender,"Failed to fetch commands");
         }
     }
 
