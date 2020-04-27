@@ -20,16 +20,16 @@ public class CommandInviteReward implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender commandSender, Command cmd, String label, String[] args) {
-        if ("reload".equalsIgnoreCase(args[0])) {
-            onReloadCommand(commandSender);
-        } else if ("list".equalsIgnoreCase(args[0])) {
-            onListCommand(commandSender, args);
-        }
         boolean hasReloadPermission = commandSender.hasPermission(PERMISSION_RELOAD);
         boolean hasListPermission = commandSender.hasPermission(PERMISSION_LIST);
         if (!hasReloadPermission && !hasListPermission) {
             sendMessage(commandSender, "&4You have no permission to perform this command.");
             return true;
+        }
+        if ("reload".equalsIgnoreCase(args[0])) {
+            onReloadCommand(commandSender);
+        } else if ("list".equalsIgnoreCase(args[0])) {
+            onListCommand(commandSender, args);
         }
         PluginDescriptionFile pdf = plugin.getDescription();
         sendMessage(commandSender,"&6[" + pdf.getName() + "] v" + pdf.getVersion());
