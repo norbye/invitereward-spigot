@@ -5,7 +5,7 @@ Created for being able to invite users to your server and enable them to cash in
 
 ## Configuration
 ```yaml
-# InviteReward v1.0.0
+# InviteReward
 config-version: 1
 debug: false
 db:
@@ -17,13 +17,21 @@ db:
 ```
 
 ## Commands
-`/invitereward reload` - Reload the config and restart the mysql connection
+`/redeem <code>` `invitereward.redeem | default:true`
 
-`/invitereward <reward-code>` - Receice your reward-code
+Redeem a registered reward.
+
+`/invitereward reload` `invitereward.reload | default:false`
+
+Reload plugin config and reconnect to database.
+
+`/invitereward list` `invitereward.list | default:false`
+
+List active commands.
 
 ## Setup
 1. Setup a mySQL database
-2. Download the plugin jar or package with maven them yourself from this code
+2. Download the plugin jar or package it with maven yourself from this repo
 3. Run your server
 4. Configure the plugin config.yml with your db credentials
 5. Reload the plugin

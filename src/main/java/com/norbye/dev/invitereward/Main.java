@@ -27,12 +27,20 @@ public class Main extends JavaPlugin {
         config.options().copyDefaults(true);
         this.saveDefaultConfig();
 
-        PluginCommand redeemCommand = this.getCommand("redeem");
-        if (redeemCommand == null) {
+        PluginCommand inviterewardCommand = this.getCommand("invitereward");
+        if (inviterewardCommand == null) {
             // Invalid plugin
             error("Failed to enable invitereward command");
         } else {
-            redeemCommand.setExecutor(new CommandInviteReward(this));
+            inviterewardCommand.setExecutor(new CommandInviteReward(this));
+        }
+
+        PluginCommand redeemCommand = this.getCommand("redeem");
+        if (redeemCommand == null) {
+            // Invalid plugin
+            error("Failed to enable redeem command");
+        } else {
+            redeemCommand.setExecutor(new CommandRedeem(this));
         }
 
         // Launch the mysql connections
