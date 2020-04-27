@@ -12,6 +12,7 @@ public class CommandInviteReward implements CommandExecutor {
 
     private Main plugin;
 
+    private String PERMISSION_ALL = "invitereward.*";
     private String PERMISSION_RELOAD = "invitereward.reload";
     private String PERMISSION_LIST = "invitereward.list";
 
@@ -22,6 +23,10 @@ public class CommandInviteReward implements CommandExecutor {
     public boolean onCommand(CommandSender commandSender, Command cmd, String label, String[] args) {
         boolean hasReloadPermission = commandSender.hasPermission(PERMISSION_RELOAD);
         boolean hasListPermission = commandSender.hasPermission(PERMISSION_LIST);
+        if (!(commandSender instanceof Player) || commandSender.hasPermission(PERMISSION_ALL)) {
+            hasReloadPermission = true;
+            hasListPermission = true;
+        }
         if (!hasReloadPermission && !hasListPermission) {
             sendMessage(commandSender, "&4You have no permission to perform this command.");
             return true;

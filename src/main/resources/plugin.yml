@@ -17,14 +17,3 @@ commands:
     usage: /redeem <code>
     permission: invitereward.redeem
     permission-message: You do not have permission to use this command.
-
-permissions:
-  invitereward.redeem:
-    default: true
-    description: Allows the use of /redeem
-  invitereward.reload:
-    default: false
-    description: Allows the use of /invitereward reload
-  invitereward.list:
-    default: false
-    description: Allows the use of /invitereward list
